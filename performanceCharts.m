@@ -1,6 +1,6 @@
 % Calculate the Lehner 2280-40 electric motor map from performance data
 % issued by the manufacturer. Plot propeller operating points on the map.
-% Version 4. Same as Version 3, but add more charts.
+% Version 4. Same as Version 3, but with more charts.
 close all; clearvars; clc
 
 %% User-provided data
@@ -191,7 +191,7 @@ MXCL(:,5) = griddata(s,r,t,MXCL(:,2),MXCL(:,3));
 MXCR(:,5) = griddata(s,r,t,MXCR(:,2),MXCR(:,3));
 MXCL(:,6) = griddata(s,r,h,MXCL(:,2),MXCL(:,3));
 MXCR(:,6) = griddata(s,r,h,MXCR(:,2),MXCR(:,3));
-[xt, yt] = meshgrid((0:100:11000)./scale, 0:1:60);  % x: RPM, y: Ncm
+[xt, yt] = meshgrid((0:100:11000)./scale, 0:1:70);  % x: RPM, y: Ncm
 zt = griddata(r,t,h,xt,yt);
 
 % Plot section
