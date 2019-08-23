@@ -49,8 +49,6 @@ for i = 1:numel(condition)
     tempMat(:,3) = tempMat(:,3) ./ scale;
     condition{i} = tempMat;
 end
-% MXCL(:,3) = MXCL(:,3) ./ scale;
-% MXCR(:,3) = MXCR(:,3) ./ scale;
 
 % Current	Input power     RPM     Momentum	Output power	Efficiency
 % A         W               /min	Ncm         W	            %
@@ -92,8 +90,6 @@ for i = 1:numel(condition)
     tempMat(:,4) = griddata(s,r,c,tempMat(:,2),tempMat(:,3));
     condition{i} = tempMat;
 end
-% MXCL(:,4) = griddata(s,r,c,MXCL(:,2),MXCL(:,3));
-% MXCR(:,4) = griddata(s,r,c,MXCR(:,2),MXCR(:,3));
 
 % Plot section
 figure
@@ -117,11 +113,9 @@ for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,4),tempMat(:,2)+20,...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+        'o-','LineWidth',1.5,'MarkerEdgeColor','black'); %#ok<SAGROW>
 end
 
-% climb = plot3(MXCL(:,3),MXCL(:,4),MXCL(:,2)+20,'or-','LineWidth',1.5);
-% cruise = plot3(MXCR(:,3),MXCR(:,4),MXCR(:,2)+20,'oy-','LineWidth',1.5);
 hold off, grid on, view(-20,30)
 xlabel('RPM'), ylabel('Current, A'), zlabel('Output power, W')
 colorbar
@@ -151,12 +145,6 @@ for i = 1:numel(condition)
     end
     
 end
-
-% for i = 1:size(MXCR,1)
-%     text(MXCR(i,3),MXCR(i,4),MXCR(i,2)+20,...
-%         ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
-%         'HorizontalAlignment','right')
-% end
 
 % Scaling the RPM thick labels
 rpmLabel = xticklabels;
@@ -191,8 +179,6 @@ for i = 1:numel(condition)
         'o-','LineWidth',1.5,'MarkerEdgeColor','black');
 end
 
-% climb = plot(MXCL(:,3),MXCL(:,4),'or-','LineWidth',1.5);
-% cruise = plot(MXCR(:,3),MXCR(:,4),'oy-','LineWidth',1.5);
 hold off
 clabel(C,H,'FontSize',15,'Color','white')
 xlabel('RPM'), ylabel('Current, A'), title('Output power contour, W')
@@ -224,12 +210,6 @@ for i = 1:numel(condition)
     
 end
 
-% for i = 1:size(MXCR,1)
-%     text(MXCR(i,3),MXCR(i,4),...
-%         ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
-%         'HorizontalAlignment','right')
-% end
-
 % Scaling the RPM thick labels
 rpmLabel = xticklabels;
 for i = 1:numel(rpmLabel)
@@ -242,6 +222,7 @@ xticklabels(rpmLabel)
 [xt, yt] = meshgrid((0:100:11000)./scale, 0:1:70);  % x: RPM, y: Ncm
 zt = griddata(r,t,h,xt,yt);
 
+% Interpolate data to caclculate motor torque and efficiency at propeller operating points
 for i = 1:numel(condition)
     % create a temporary variable to access cell data
     tempMat =  condition{i};
@@ -249,11 +230,6 @@ for i = 1:numel(condition)
     tempMat(:,6) = griddata(s,r,h,tempMat(:,2),tempMat(:,3));
     condition{i} = tempMat;
 end
-
-% MXCL(:,5) = griddata(s,r,t,MXCL(:,2),MXCL(:,3));
-% MXCR(:,5) = griddata(s,r,t,MXCR(:,2),MXCR(:,3));
-% MXCL(:,6) = griddata(s,r,h,MXCL(:,2),MXCL(:,3));
-% MXCR(:,6) = griddata(s,r,h,MXCR(:,2),MXCR(:,3));
 
 % Plot section
 figure
@@ -280,8 +256,6 @@ for i = 1:numel(condition)
         'o-','LineWidth',1.5,'MarkerEdgeColor','black');
 end
 
-% climb = plot3(MXCL(:,3),MXCL(:,5),MXCL(:,6)+2,'or-','LineWidth',1.5);
-% cruise = plot3(MXCR(:,3),MXCR(:,5),MXCR(:,6)+2,'ob-','LineWidth',1.5);
 hold off, grid on, view(-20,30)
 xlabel('RPM'), ylabel('Torque, Ncm'), zlabel('Motor Efficiency')
 colorbar
@@ -311,12 +285,6 @@ for i = 1:numel(condition)
     end
     
 end
-
-% for i = 1:size(MXCR,1)
-%     text(MXCR(i,3),MXCR(i,5),MXCR(i,6)+2,...
-%         ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
-%         'HorizontalAlignment','right')
-% end
 
 % Scaling the RPM thick labels
 rpmLabel = xticklabels;
@@ -351,8 +319,6 @@ for i = 1:numel(condition)
         'o-','LineWidth',1.5,'MarkerEdgeColor','black');
 end
 
-% climb = plot(MXCL(:,3),MXCL(:,5),'or-','LineWidth',1.5);
-% cruise = plot(MXCR(:,3),MXCR(:,5),'ob-','LineWidth',1.5);
 hold off
 clabel(C,H,'FontSize',15,'Color','black')
 xlabel('RPM'), ylabel('Torque, Ncm'), title('Motor Efficiency')
@@ -383,12 +349,6 @@ for i = 1:numel(condition)
     end
     
 end
-
-% for i = 1:size(MXCR,1)
-%     text(MXCR(i,3),MXCR(i,5),...
-%         ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
-%         'HorizontalAlignment','right')
-% end
 
 % Scaling the RPM thick labels
 rpmLabel = xticklabels;
