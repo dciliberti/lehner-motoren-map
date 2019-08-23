@@ -1,7 +1,7 @@
 % Calculate the Lehner 2280-40 electric motor map from performance data
 % issued by the manufacturer. Plot propeller operating points on the map.
 % Version 5. Define and compare as many propeller operating conditions as
-% you want.
+% desired.
 close all; clearvars; clc
 
 %% User-provided data
