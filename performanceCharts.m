@@ -1,18 +1,32 @@
 % Calculate the Lehner 2280-40 electric motor map from performance data
 % issued by the manufacturer. Plot propeller operating points on the map.
-% Version 4. Same as Version 3, but with more charts.
+% Version 5. Define and compare as many propeller operating conditions as
+% you want.
 close all; clearvars; clc
 
 %% User-provided data
-% Operative points: J, Shaft Power (W), RPM
-MXCL = [1.46    403   9801
-        1.95    174   7351];
+conditionLabels = {'Desired values','XROTOR','CFD'};
 
-MXCR = [1.84	300   7807
-        2.30	159   6246
-        2.76	96    5205
-        2.99	77    4804
-        3.22	63    4461];
+% Operative points: J, Shaft Power (W), RPM
+condition{1} = [1.46    403   9801
+                1.95    174   7351];
+
+condition{2} = [1.38	1329	10411
+                1.44	1116	9958
+                1.51	941     9543
+                1.57	798     9162
+                1.63	679     8809
+                1.70	580     8483
+                1.76	498     8180
+                1.82	428     7898
+                1.88	368     7635
+                1.95	318     7388
+                2.01	274     7157];
+
+condition{3} = [1.4     1013	10274
+                1.6     593     8990
+                1.8     367     7991
+                2       236     7192];
 
 %% Lehner performance data
 V1 = csvread('data\V5.csv');
@@ -29,8 +43,14 @@ V11 = csvread('data\V55.csv');
 V12 = csvread('data\V60.csv');
 
 scale = 1000; % Scale factor over RPM for better interpolation
-MXCL(:,3) = MXCL(:,3) ./ scale;
-MXCR(:,3) = MXCR(:,3) ./ scale;
+for i = 1:numel(condition)
+    % create a temporary variable to manipulate part of cell data
+    tempMat =  condition{i};
+    tempMat(:,3) = tempMat(:,3) ./ scale;
+    condition{i} = tempMat;
+end
+% MXCL(:,3) = MXCL(:,3) ./ scale;
+% MXCR(:,3) = MXCR(:,3) ./ scale;
 
 % Current	Input power     RPM     Momentum	Output power	Efficiency
 % A         W               /min	Ncm         W	            %
@@ -66,8 +86,14 @@ limEta = [V1(end,6); V2(end,6); V3(end,6); V4(end,6); V5(end,6); V6(end,6); V7(e
 za = griddata(r,c,s,xa,ya);
 
 % Interpolate data to caclculate current drawn at propeller operating points
-MXCL(:,4) = griddata(s,r,c,MXCL(:,2),MXCL(:,3));
-MXCR(:,4) = griddata(s,r,c,MXCR(:,2),MXCR(:,3));
+for i = 1:numel(condition)
+    % create a temporary variable to access cell data
+    tempMat =  condition{i};
+    tempMat(:,4) = griddata(s,r,c,tempMat(:,2),tempMat(:,3));
+    condition{i} = tempMat;
+end
+% MXCL(:,4) = griddata(s,r,c,MXCL(:,2),MXCL(:,3));
+% MXCR(:,4) = griddata(s,r,c,MXCR(:,2),MXCR(:,3));
 
 % Plot section
 figure
@@ -86,12 +112,20 @@ plot3(V10(:,3)./scale,V10(:,1),V10(:,5),'k--')
 plot3(V11(:,3)./scale,V11(:,1),V11(:,5),'k--')
 plot3(V12(:,3)./scale,V12(:,1),V12(:,5),'k--')
 plot3(limRPM,limCur,limPow,'k-','LineWidth',2)
-climb = plot3(MXCL(:,3),MXCL(:,4),MXCL(:,2)+20,'or-','LineWidth',1.5);
-cruise = plot3(MXCR(:,3),MXCR(:,4),MXCR(:,2)+20,'oy-','LineWidth',1.5);
-hold off, grid on, view(-20,30) 
+
+for i = 1:numel(condition)
+    % create a temporary variable to access part of cell data
+    tempMat =  condition{i};
+    conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,4),tempMat(:,2)+20,...
+        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+end
+
+% climb = plot3(MXCL(:,3),MXCL(:,4),MXCL(:,2)+20,'or-','LineWidth',1.5);
+% cruise = plot3(MXCR(:,3),MXCR(:,4),MXCR(:,2)+20,'oy-','LineWidth',1.5);
+hold off, grid on, view(-20,30)
 xlabel('RPM'), ylabel('Current, A'), zlabel('Output power, W')
 colorbar
-legend([climb,cruise], 'MXCL', 'MXCR','Location','Best','Color','cyan')
+legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
 % Annotations on surf
 text(V1(end,3)./scale,V1(end,1),V1(end,5),'5 V \rightarrow', 'HorizontalAlignment', 'right')
@@ -107,17 +141,22 @@ text(V10(end,3)./scale,V10(end,1),V10(end,5),'50 V \rightarrow', 'HorizontalAlig
 text(V11(end,3)./scale,V11(end,1),V11(end,5),'55 V \rightarrow', 'HorizontalAlignment', 'right')
 text(V12(end,3)./scale,V12(end,1),V12(end,5),'60 V \rightarrow', 'HorizontalAlignment', 'right')
 
-for i = 1:size(MXCL,1)
-    text(MXCL(i,3),MXCL(i,4),MXCL(i,2)+20,...
-        ['J = ',num2str(MXCL(i,1)), ' \rightarrow'], ...
-        'HorizontalAlignment','right')
+for i = 1:numel(condition)
+    tempMat =  condition{i};
+    
+    for j = 1:size(tempMat,1)
+        text(tempMat(j,3),tempMat(j,4),tempMat(j,2)+20,...
+            ['J = ',num2str(tempMat(j,1)), ' \rightarrow'], ...
+            'HorizontalAlignment','right')
+    end
+    
 end
 
-for i = 1:size(MXCR,1)
-    text(MXCR(i,3),MXCR(i,4),MXCR(i,2)+20,...
-        ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
-        'HorizontalAlignment','right')
-end
+% for i = 1:size(MXCR,1)
+%     text(MXCR(i,3),MXCR(i,4),MXCR(i,2)+20,...
+%         ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
+%         'HorizontalAlignment','right')
+% end
 
 % Scaling the RPM thick labels
 rpmLabel = xticklabels;
@@ -144,13 +183,21 @@ plot(V10(:,3)./scale,V10(:,1),'k--')
 plot(V11(:,3)./scale,V11(:,1),'k--')
 plot(V12(:,3)./scale,V12(:,1),'k--')
 plot(limRPM,limCur,'k-','LineWidth',2)
-climb = plot(MXCL(:,3),MXCL(:,4),'or-','LineWidth',1.5);
-cruise = plot(MXCR(:,3),MXCR(:,4),'oy-','LineWidth',1.5);
+
+for i = 1:numel(condition)
+    % create a temporary variable to access part of cell data
+    tempMat =  condition{i};
+    conditionCurves{i} = plot(tempMat(:,3),tempMat(:,4),...
+        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+end
+
+% climb = plot(MXCL(:,3),MXCL(:,4),'or-','LineWidth',1.5);
+% cruise = plot(MXCR(:,3),MXCR(:,4),'oy-','LineWidth',1.5);
 hold off
 clabel(C,H,'FontSize',15,'Color','white')
 xlabel('RPM'), ylabel('Current, A'), title('Output power contour, W')
 colorbar
-legend([climb,cruise], 'MXCL', 'MXCR','Location','Best','Color','cyan')
+legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
 % Annotations on contour
 text(V1(end,3)./scale,V1(end,1),'5 V \rightarrow', 'HorizontalAlignment', 'right')
@@ -166,17 +213,22 @@ text(V10(end,3)./scale,V10(end,1),'50 V \rightarrow', 'HorizontalAlignment', 'ri
 text(V11(end,3)./scale,V11(end,1),'55 V \rightarrow', 'HorizontalAlignment', 'right')
 text(V12(end,3)./scale,V12(end,1),'60 V \rightarrow', 'HorizontalAlignment', 'right')
 
-for i = 1:size(MXCL,1)
-    text(MXCL(i,3),MXCL(i,4),...
-        ['J = ',num2str(MXCL(i,1)), ' \rightarrow'], ...
-        'HorizontalAlignment','right')
+for i = 1:numel(condition)
+    tempMat =  condition{i};
+    
+    for j = 1:size(tempMat,1)
+        text(tempMat(j,3),tempMat(j,4),...
+            ['J = ',num2str(tempMat(j,1)), ' \rightarrow'], ...
+            'HorizontalAlignment','right')
+    end
+    
 end
 
-for i = 1:size(MXCR,1)
-    text(MXCR(i,3),MXCR(i,4),...
-        ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
-        'HorizontalAlignment','right')
-end
+% for i = 1:size(MXCR,1)
+%     text(MXCR(i,3),MXCR(i,4),...
+%         ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
+%         'HorizontalAlignment','right')
+% end
 
 % Scaling the RPM thick labels
 rpmLabel = xticklabels;
@@ -187,12 +239,21 @@ end
 xticklabels(rpmLabel)
 
 %% Calculate TORQUE and motor EFFICIENCY from expected shaft power and RPM (propeller data)
-MXCL(:,5) = griddata(s,r,t,MXCL(:,2),MXCL(:,3));
-MXCR(:,5) = griddata(s,r,t,MXCR(:,2),MXCR(:,3));
-MXCL(:,6) = griddata(s,r,h,MXCL(:,2),MXCL(:,3));
-MXCR(:,6) = griddata(s,r,h,MXCR(:,2),MXCR(:,3));
 [xt, yt] = meshgrid((0:100:11000)./scale, 0:1:70);  % x: RPM, y: Ncm
 zt = griddata(r,t,h,xt,yt);
+
+for i = 1:numel(condition)
+    % create a temporary variable to access cell data
+    tempMat =  condition{i};
+    tempMat(:,5) = griddata(s,r,t,tempMat(:,2),tempMat(:,3));
+    tempMat(:,6) = griddata(s,r,h,tempMat(:,2),tempMat(:,3));
+    condition{i} = tempMat;
+end
+
+% MXCL(:,5) = griddata(s,r,t,MXCL(:,2),MXCL(:,3));
+% MXCR(:,5) = griddata(s,r,t,MXCR(:,2),MXCR(:,3));
+% MXCL(:,6) = griddata(s,r,h,MXCL(:,2),MXCL(:,3));
+% MXCR(:,6) = griddata(s,r,h,MXCR(:,2),MXCR(:,3));
 
 % Plot section
 figure
@@ -204,19 +265,27 @@ plot3(V3(:,3)./scale,V3(:,4),V3(:,6),'k--')
 plot3(V4(:,3)./scale,V4(:,4),V4(:,6),'k--')
 plot3(V5(:,3)./scale,V5(:,4),V5(:,6),'k--')
 plot3(V6(:,3)./scale,V6(:,4),V6(:,6),'k--')
-plot3(V7(:,3)./scale,V7(:,4),V7(:,6),'k--')   
+plot3(V7(:,3)./scale,V7(:,4),V7(:,6),'k--')
 plot3(V8(:,3)./scale,V8(:,4),V8(:,6),'k--')
 plot3(V9(:,3)./scale,V9(:,4),V9(:,6),'k--')
 plot3(V10(:,3)./scale,V10(:,4),V10(:,6),'k--')
 plot3(V11(:,3)./scale,V11(:,4),V11(:,6),'k--')
 plot3(V12(:,3)./scale,V12(:,4),V12(:,6),'k--')
 plot3(limRPM,limMom,limEta,'k-','LineWidth',2)
-climb = plot3(MXCL(:,3),MXCL(:,5),MXCL(:,6)+2,'or-','LineWidth',1.5);
-cruise = plot3(MXCR(:,3),MXCR(:,5),MXCR(:,6)+2,'ob-','LineWidth',1.5);
-hold off, grid on, view(-20,30) 
+
+for i = 1:numel(condition)
+    % create a temporary variable to access part of cell data
+    tempMat =  condition{i};
+    conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,5),tempMat(:,6)+2,...
+        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+end
+
+% climb = plot3(MXCL(:,3),MXCL(:,5),MXCL(:,6)+2,'or-','LineWidth',1.5);
+% cruise = plot3(MXCR(:,3),MXCR(:,5),MXCR(:,6)+2,'ob-','LineWidth',1.5);
+hold off, grid on, view(-20,30)
 xlabel('RPM'), ylabel('Torque, Ncm'), zlabel('Motor Efficiency')
 colorbar
-legend([climb,cruise], 'MXCL', 'MXCR','Location','Best','Color','cyan')
+legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
 % Annotations on surf
 text(V1(end,3)./scale,V1(end,4),V1(end,6),'5 V \rightarrow', 'HorizontalAlignment', 'right')
@@ -232,17 +301,22 @@ text(V10(end,3)./scale,V10(end,4),V10(end,6),'50 V \rightarrow', 'HorizontalAlig
 text(V11(end,3)./scale,V11(end,4),V11(end,6),'55 V \rightarrow', 'HorizontalAlignment', 'right')
 text(V12(end,3)./scale,V12(end,4),V12(end,6),'60 V \rightarrow', 'HorizontalAlignment', 'right')
 
-for i = 1:size(MXCL,1)
-    text(MXCL(i,3),MXCL(i,5),MXCL(i,6)+2,...
-        ['J = ',num2str(MXCL(i,1)), ' \rightarrow'], ...
-        'HorizontalAlignment','right')
+for i = 1:numel(condition)
+    tempMat =  condition{i};
+    
+    for j = 1:size(tempMat,1)
+        text(tempMat(j,3),tempMat(j,5),tempMat(j,6)+2,...
+            ['J = ',num2str(tempMat(j,1)), ' \rightarrow'], ...
+            'HorizontalAlignment','right')
+    end
+    
 end
 
-for i = 1:size(MXCR,1)
-    text(MXCR(i,3),MXCR(i,5),MXCR(i,6)+2,...
-        ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
-        'HorizontalAlignment','right')
-end
+% for i = 1:size(MXCR,1)
+%     text(MXCR(i,3),MXCR(i,5),MXCR(i,6)+2,...
+%         ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
+%         'HorizontalAlignment','right')
+% end
 
 % Scaling the RPM thick labels
 rpmLabel = xticklabels;
@@ -269,13 +343,21 @@ plot(V10(:,3)./scale,V10(:,4),'k--')
 plot(V11(:,3)./scale,V11(:,4),'k--')
 plot(V12(:,3)./scale,V12(:,4),'k--')
 plot(limRPM,limMom,'k-','LineWidth',2)
-climb = plot(MXCL(:,3),MXCL(:,5),'or-','LineWidth',1.5);
-cruise = plot(MXCR(:,3),MXCR(:,5),'ob-','LineWidth',1.5);
+
+for i = 1:numel(condition)
+    % create a temporary variable to access part of cell data
+    tempMat =  condition{i};
+    conditionCurves{i} = plot(tempMat(:,3),tempMat(:,5),...
+        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+end
+
+% climb = plot(MXCL(:,3),MXCL(:,5),'or-','LineWidth',1.5);
+% cruise = plot(MXCR(:,3),MXCR(:,5),'ob-','LineWidth',1.5);
 hold off
 clabel(C,H,'FontSize',15,'Color','black')
 xlabel('RPM'), ylabel('Torque, Ncm'), title('Motor Efficiency')
 colorbar
-legend([climb,cruise], 'MXCL', 'MXCR','Location','Best','Color','cyan')
+legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
 % Annotations on contour
 text(V1(end,3)./scale,V1(end,4),'5 V \rightarrow', 'HorizontalAlignment', 'right')
@@ -291,17 +373,22 @@ text(V10(end,3)./scale,V10(end,4),'50 V \rightarrow', 'HorizontalAlignment', 'ri
 text(V11(end,3)./scale,V11(end,4),'55 V \rightarrow', 'HorizontalAlignment', 'right')
 text(V12(end,3)./scale,V12(end,4),'60 V \rightarrow', 'HorizontalAlignment', 'right')
 
-for i = 1:size(MXCL,1)
-    text(MXCL(i,3),MXCL(i,5),...
-        ['J = ',num2str(MXCL(i,1)), ' \rightarrow'], ...
-        'HorizontalAlignment','right')
+for i = 1:numel(condition)
+    tempMat =  condition{i};
+    
+    for j = 1:size(tempMat,1)
+        text(tempMat(j,3),tempMat(j,5),...
+            ['J = ',num2str(tempMat(j,1)), ' \rightarrow'], ...
+            'HorizontalAlignment','right')
+    end
+    
 end
 
-for i = 1:size(MXCR,1)
-    text(MXCR(i,3),MXCR(i,5),...
-        ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
-        'HorizontalAlignment','right')
-end
+% for i = 1:size(MXCR,1)
+%     text(MXCR(i,3),MXCR(i,5),...
+%         ['J = ',num2str(MXCR(i,1)), ' \rightarrow'], ...
+%         'HorizontalAlignment','right')
+% end
 
 % Scaling the RPM thick labels
 rpmLabel = xticklabels;
