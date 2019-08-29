@@ -107,17 +107,17 @@ plot3(V9(:,3)./scale,V9(:,1),V9(:,5),'k--')
 plot3(V10(:,3)./scale,V10(:,1),V10(:,5),'k--')
 plot3(V11(:,3)./scale,V11(:,1),V11(:,5),'k--')
 plot3(V12(:,3)./scale,V12(:,1),V12(:,5),'k--')
-plot3(limRPM,limCur,limPow,'k-','LineWidth',2)
+% plot3(limRPM,limCur,limPow,'k-','LineWidth',2)
 
 for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,4),tempMat(:,2)+20,...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black'); %#ok<SAGROW>
+        '-o','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black'); %#ok<SAGROW>
 end
 
 hold off, grid on, view(-20,30)
-xlabel('RPM'), ylabel('Current, A'), zlabel('Output power, W')
+xlabel('RPM'), ylabel('Current, A'), zlabel('Shaft power, W')
 colorbar
 legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
@@ -170,19 +170,19 @@ plot(V9(:,3)./scale,V9(:,1),'k--')
 plot(V10(:,3)./scale,V10(:,1),'k--')
 plot(V11(:,3)./scale,V11(:,1),'k--')
 plot(V12(:,3)./scale,V12(:,1),'k--')
-plot(limRPM,limCur,'k-','LineWidth',2)
+% plot(limRPM,limCur,'k-','LineWidth',2)
 
 for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot(tempMat(:,3),tempMat(:,4),...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
 end
 
 hold off
 clabel(C,H,'FontSize',15,'Color','white')
-xlabel('RPM'), ylabel('Current, A'), title('Output power contour, W')
-colorbar
+xlabel('RPM'), ylabel('Current, A'), title('Shaft power contour, W')
+% colorbar
 legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
 % Annotations on contour
@@ -247,13 +247,13 @@ plot3(V9(:,3)./scale,V9(:,4),V9(:,6),'k--')
 plot3(V10(:,3)./scale,V10(:,4),V10(:,6),'k--')
 plot3(V11(:,3)./scale,V11(:,4),V11(:,6),'k--')
 plot3(V12(:,3)./scale,V12(:,4),V12(:,6),'k--')
-plot3(limRPM,limMom,limEta,'k-','LineWidth',2)
+% plot3(limRPM,limMom,limEta,'k-','LineWidth',2)
 
 for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,5),tempMat(:,6)+2,...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
 end
 
 hold off, grid on, view(-20,30)
@@ -310,19 +310,19 @@ plot(V9(:,3)./scale,V9(:,4),'k--')
 plot(V10(:,3)./scale,V10(:,4),'k--')
 plot(V11(:,3)./scale,V11(:,4),'k--')
 plot(V12(:,3)./scale,V12(:,4),'k--')
-plot(limRPM,limMom,'k-','LineWidth',2)
+% plot(limRPM,limMom,'k-','LineWidth',2)
 
 for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot(tempMat(:,3),tempMat(:,5),...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
 end
 
 hold off
 clabel(C,H,'FontSize',15,'Color','black')
 xlabel('RPM'), ylabel('Torque, Ncm'), title('Motor Efficiency')
-colorbar
+% colorbar
 legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
 % Annotations on contour
