@@ -11,22 +11,22 @@ conditionLabels = {'Desired values','XROTOR','CFD'};
 condition{1} = [1.46    403   9801
                 1.95    174   7351];
 
-condition{2} = [1.38	1329	10411
-                1.44	1116	9958
-                1.51	941     9543
-                1.57	798     9162
-                1.63	679     8809
-                1.70	580     8483
-                1.76	498     8180
-                1.82	428     7898
-                1.88	368     7635
-                1.95	318     7388
-                2.01	274     7157];
+condition{2} = [1.57	849     9162
+                1.73	585     8329
+                1.88	411     7635
+                2.04	293     7047
+                2.20	211     6544
+                2.36	153     6108
+                2.51	112     5726
+                2.67	83      5389
+                2.83	67      5090];
 
-condition{3} = [1.4     1013	10274
-                1.6     593     8990
-                1.8     367     7991
-                2       236     7192];
+condition{3} = [1.4     1137	10274
+                1.6     679     8990
+                1.8     429     7991
+                2.0     284     7192
+                2.2     195     6538
+                2.4     141     5993];
 
 %% Lehner performance data
 V1 = csvread('data\V5.csv');
@@ -107,17 +107,17 @@ plot3(V9(:,3)./scale,V9(:,1),V9(:,5),'k--')
 plot3(V10(:,3)./scale,V10(:,1),V10(:,5),'k--')
 plot3(V11(:,3)./scale,V11(:,1),V11(:,5),'k--')
 plot3(V12(:,3)./scale,V12(:,1),V12(:,5),'k--')
-plot3(limRPM,limCur,limPow,'k-','LineWidth',2)
+% plot3(limRPM,limCur,limPow,'k-','LineWidth',2)
 
 for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,4),tempMat(:,2)+20,...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black'); %#ok<SAGROW>
+        '-o','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black'); %#ok<SAGROW>
 end
 
 hold off, grid on, view(-20,30)
-xlabel('RPM'), ylabel('Current, A'), zlabel('Output power, W')
+xlabel('RPM'), ylabel('Current, A'), zlabel('Shaft power, W')
 colorbar
 legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
@@ -170,19 +170,19 @@ plot(V9(:,3)./scale,V9(:,1),'k--')
 plot(V10(:,3)./scale,V10(:,1),'k--')
 plot(V11(:,3)./scale,V11(:,1),'k--')
 plot(V12(:,3)./scale,V12(:,1),'k--')
-plot(limRPM,limCur,'k-','LineWidth',2)
+% plot(limRPM,limCur,'k-','LineWidth',2)
 
 for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot(tempMat(:,3),tempMat(:,4),...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
 end
 
 hold off
 clabel(C,H,'FontSize',15,'Color','white')
-xlabel('RPM'), ylabel('Current, A'), title('Output power contour, W')
-colorbar
+xlabel('RPM'), ylabel('Current, A'), title('Shaft power contour, W')
+% colorbar
 legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
 % Annotations on contour
@@ -247,13 +247,13 @@ plot3(V9(:,3)./scale,V9(:,4),V9(:,6),'k--')
 plot3(V10(:,3)./scale,V10(:,4),V10(:,6),'k--')
 plot3(V11(:,3)./scale,V11(:,4),V11(:,6),'k--')
 plot3(V12(:,3)./scale,V12(:,4),V12(:,6),'k--')
-plot3(limRPM,limMom,limEta,'k-','LineWidth',2)
+% plot3(limRPM,limMom,limEta,'k-','LineWidth',2)
 
 for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,5),tempMat(:,6)+2,...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
 end
 
 hold off, grid on, view(-20,30)
@@ -310,19 +310,19 @@ plot(V9(:,3)./scale,V9(:,4),'k--')
 plot(V10(:,3)./scale,V10(:,4),'k--')
 plot(V11(:,3)./scale,V11(:,4),'k--')
 plot(V12(:,3)./scale,V12(:,4),'k--')
-plot(limRPM,limMom,'k-','LineWidth',2)
+% plot(limRPM,limMom,'k-','LineWidth',2)
 
 for i = 1:numel(condition)
     % create a temporary variable to access part of cell data
     tempMat =  condition{i};
     conditionCurves{i} = plot(tempMat(:,3),tempMat(:,5),...
-        'o-','LineWidth',1.5,'MarkerEdgeColor','black');
+        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
 end
 
 hold off
 clabel(C,H,'FontSize',15,'Color','black')
 xlabel('RPM'), ylabel('Torque, Ncm'), title('Motor Efficiency')
-colorbar
+% colorbar
 legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
 % Annotations on contour
