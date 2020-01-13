@@ -13,6 +13,7 @@ function plotData(condition,conditionLabels,voltData,...
 % XSCALE        scale factor of the x-axis
 % XSCALE        scale factor of the y-axis
 % XSCALE        scale factor of the z-axis
+% JCONV         conversion factor from RPM to J (advance ratio)
 %
 % Possible values of XINDEX, YINDEX, ZINDEX
 %
