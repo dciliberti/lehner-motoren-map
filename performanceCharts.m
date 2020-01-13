@@ -28,6 +28,37 @@ condition{3} = [1.4     1137	10274
                 2.2     195     6538
                 2.4     141     5993];
 
+% conditionLabels = {'diretta 1:1', 'ridotta 1:2'};
+% condition{1} = [
+%     0.47	12939	11141
+%     0.63	5497	8356
+%     0.79	3034.3	6685
+%     0.94	1942.5	5570
+%     1.10	1374.1	4775
+%     1.26	1038.4	4178
+%     1.41	787.28	3714
+%     1.57	557.28	3342
+%     1.73	383.67	3038
+%     1.88	259.54	2785
+%     2.04	169.35	2571
+%     2.20	102.46	2387
+%     ];
+% 
+% condition{2} = [
+%     0.47	12939	22282
+%     0.63	5497	16711
+%     0.79	3034.3	13369
+%     0.94	1942.5	11141
+%     1.10	1374.1	9549
+%     1.26	1038.4	8356
+%     1.41	787.28	7427
+%     1.57	557.28	6685
+%     1.73	383.67	6077
+%     1.88	259.54	5570
+%     2.04	169.35	5142
+%     2.20	102.46	4775
+%     ];
+
 %% Lehner performance data
 v = 0;
 for i = 1:12
@@ -87,171 +118,25 @@ for i = 1:numel(condition)
     condition{i} = tempMat;
 end
 
-%% Calculate CURRENT from expected shaft power and RPM (propeller data)
-[xa, ya] = meshgrid((0:100:11000)./scale, 0:0.1:15);  % x: RPM, y: Ampere
-za = griddata(r,c,s,xa,ya);
+% CONDITION = [J, SHAFT POWER, RPM, CURRENT, TORQUE, EFFICIENCY];
 
-% Plot section
-figure
-hold on
-surf(xa,ya,za,'FaceColor','interp','LineStyle','none')
-voltagePlot3(V,3,1,5,scale,1,1)
+%% Calculate SHAFT POWER from RPM and CURRENT
+[xsrc, ysrc] = meshgrid((0:100:11000)./scale, 0:0.1:15);  % x: RPM, y: Ampere
+zsrc = griddata(r,c,s,xsrc,ysrc);
 
-for i = 1:numel(condition)
-    % create a temporary variable to access part of cell data
-    tempMat =  condition{i};
-    conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,4),tempMat(:,2)+20,...
-        '-o','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
-end
+plotData(condition,conditionLabels,V,...
+    xsrc,ysrc,zsrc,3,1,5,scale,1,1)
 
-hold off, grid on, view(-20,30)
-xlabel('RPM'), ylabel('Current, A'), zlabel('Shaft power, W')
-colorbar
-legend([conditionCurves{:}],conditionLabels,'Location','Best')
+%% Calculate EFFICIENCY from RPM and TORQUE
+[xert, yert] = meshgrid((0:100:11000)./scale, 0:1:70);  % x: RPM, y: Ncm
+zert = griddata(r,t,h,xert,yert);
 
-% Annotations on surf
-annot3(V,3,1,5,scale,1,1)
+plotData(condition,conditionLabels,V,...
+    xert,yert,zert,3,4,6,scale,1,1)
 
-for i = 1:numel(condition)
-    tempMat =  condition{i};
-    
-    for j = 1:size(tempMat,1)
-        text(tempMat(j,3),tempMat(j,4),tempMat(j,2)+20,...
-            ['J = ',num2str(tempMat(j,1)), ' \rightarrow'], ...
-            'HorizontalAlignment','right')
-    end
-    
-end
+%% Calculate EFFICIENCY from RPM and CURRENT
+[xerc, yerc] = meshgrid((0:100:11000)./scale, 0:0.1:15);  % x: RPM, y: Ncm
+zerc = griddata(r,c,h,xerc,yerc);
 
-% Scaling the RPM thick labels
-rpmLabel = xticklabels;
-for i = 1:numel(rpmLabel)
-    rpmLabel{i} = str2double(rpmLabel{i}) * scale;
-    rpmLabel{i} = num2str(rpmLabel{i});
-end
-xticklabels(rpmLabel)
-
-% Contour plot
-figure
-hold on
-[C,H] = contourf(xa,ya,za,0:50:700);
-voltagePlot(V,3,1,scale,1)
-
-for i = 1:numel(condition)
-    % create a temporary variable to access part of cell data
-    tempMat =  condition{i};
-    conditionCurves{i} = plot(tempMat(:,3),tempMat(:,4),...
-        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
-end
-
-hold off
-clabel(C,H,'FontSize',15,'Color','white')
-xlabel('RPM'), ylabel('Current, A'), title('Shaft power contour, W')
-% colorbar
-legend([conditionCurves{:}],conditionLabels,'Location','Best')
-
-% Annotations on contour
-annot(V,3,1,scale,1)
-
-for i = 1:numel(condition)
-    tempMat =  condition{i};
-    
-    for j = 1:size(tempMat,1)
-        text(tempMat(j,3),tempMat(j,4),...
-            ['J = ',num2str(tempMat(j,1)), ' \rightarrow'], ...
-            'HorizontalAlignment','right')
-    end
-    
-end
-
-% Scaling the RPM thick labels
-rpmLabel = xticklabels;
-for i = 1:numel(rpmLabel)
-    rpmLabel{i} = str2double(rpmLabel{i}) * scale;
-    rpmLabel{i} = num2str(rpmLabel{i});
-end
-xticklabels(rpmLabel)
-
-%% Calculate TORQUE and motor EFFICIENCY from expected shaft power and RPM (propeller data)
-[xt, yt] = meshgrid((0:100:11000)./scale, 0:1:70);  % x: RPM, y: Ncm
-zt = griddata(r,t,h,xt,yt);
-
-figure
-hold on
-surf(xt,yt,zt,'FaceColor','interp','LineStyle','none')
-voltagePlot3(V,3,4,6,scale,1,1)
-
-for i = 1:numel(condition)
-    % create a temporary variable to access part of cell data
-    tempMat =  condition{i};
-    conditionCurves{i} = plot3(tempMat(:,3),tempMat(:,5),tempMat(:,6)+2,...
-        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
-end
-
-hold off, grid on, view(-20,30)
-xlabel('RPM'), ylabel('Torque, Ncm'), zlabel('Motor Efficiency')
-colorbar
-legend([conditionCurves{:}],conditionLabels,'Location','Best')
-
-% Annotations on surf
-annot3(V,3,4,6,scale,1,1)
-
-for i = 1:numel(condition)
-    tempMat =  condition{i};
-    
-    for j = 1:size(tempMat,1)
-        text(tempMat(j,3),tempMat(j,5),tempMat(j,6)+2,...
-            ['J = ',num2str(tempMat(j,1)), ' \rightarrow'], ...
-            'HorizontalAlignment','right')
-    end
-    
-end
-
-% Scaling the RPM thick labels
-rpmLabel = xticklabels;
-for i = 1:numel(rpmLabel)
-    rpmLabel{i} = str2double(rpmLabel{i}) * scale;
-    rpmLabel{i} = num2str(rpmLabel{i});
-end
-xticklabels(rpmLabel)
-
-% Contour plot
-figure
-hold on
-[C,H] = contourf(xt,yt,zt,[5:10:85,85:2:90,90:0.5:95]);
-voltagePlot(V,3,4,scale,1)
-
-for i = 1:numel(condition)
-    % create a temporary variable to access part of cell data
-    tempMat =  condition{i};
-    conditionCurves{i} = plot(tempMat(:,3),tempMat(:,5),...
-        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
-end
-
-hold off
-clabel(C,H,'FontSize',15,'Color','black')
-xlabel('RPM'), ylabel('Torque, Ncm'), title('Motor Efficiency')
-% colorbar
-legend([conditionCurves{:}],conditionLabels,'Location','Best')
-
-% Annotations on contour
-annot(V,3,4,scale,1)
-
-for i = 1:numel(condition)
-    tempMat =  condition{i};
-    
-    for j = 1:size(tempMat,1)
-        text(tempMat(j,3),tempMat(j,5),...
-            ['J = ',num2str(tempMat(j,1)), ' \rightarrow'], ...
-            'HorizontalAlignment','right')
-    end
-    
-end
-
-% Scaling the RPM thick labels
-rpmLabel = xticklabels;
-for i = 1:numel(rpmLabel)
-    rpmLabel{i} = str2double(rpmLabel{i}) * scale;
-    rpmLabel{i} = num2str(rpmLabel{i});
-end
-xticklabels(rpmLabel)
+plotData(condition,conditionLabels,V,...
+    xerc,yerc,zerc,3,1,6,scale,1,1)
