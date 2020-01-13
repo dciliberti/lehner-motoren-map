@@ -86,7 +86,7 @@ for i = 1:numel(condition)
     
     for j = 1:size(tempMat,1)
         text(tempMat(j,xIndex),tempMat(j,yIndex),tempMat(j,zIndex)*1.01,...
-            ['T = ',num2str(tempMat(j,1)), ' N \rightarrow'], ...
+            ['T = ',num2str(tempMat(j,1),'%.1f'), ' N \rightarrow'], ...
             'HorizontalAlignment','right')
     end
     
@@ -142,6 +142,7 @@ if xIndex == 3 % RPM
     
     xticks(0:11);
     xticklabels([]);
+    xlabel([])
     xx = xticks;
     xl = xlim;
     newTickScale = xx(end)/xl(end) / (length(xx)-1);
@@ -184,7 +185,7 @@ for i = 1:numel(condition)
     
     for j = 1:size(tempMat,1)
         text(tempMat(j,xIndex),tempMat(j,yIndex),...
-            ['T = ',num2str(condition{i}(j,1)), ' N \rightarrow'], ...
+            ['T = ',num2str(tempMat(j,1),'%.1f'), ' N \rightarrow'], ...
             'HorizontalAlignment','right')
     end
     
