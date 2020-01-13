@@ -1,5 +1,5 @@
 function plotData(condition,conditionLabels,voltData,...
-    xData,yData,zData,xIndex,yIndex,zIndex,xScale,yScale,zScale)
+    xData,yData,zData,xIndex,yIndex,zIndex,xScale,yScale,zScale,Jconv)
 
 % CONDITION     cell of array of propeller data. Each condition is an array of double
 % CONDITIONLABELS cell array of strings indicating each condition name
@@ -85,7 +85,7 @@ for i = 1:numel(condition)
     
     for j = 1:size(tempMat,1)
         text(tempMat(j,xIndex),tempMat(j,yIndex),tempMat(j,zIndex)*1.01,...
-            ['J = ',num2str(condition{i}(j,1)), ' \rightarrow'], ...
+            ['T = ',num2str(tempMat(j,1)), ' N \rightarrow'], ...
             'HorizontalAlignment','right')
     end
     
@@ -136,6 +136,43 @@ xlabel(labelArray{1}), ylabel(labelArray{2}), title(labelArray{3})
 % colorbar
 legend([conditionCurves{:}],conditionLabels,'Location','Best')
 
+% Set two lines for the axis showing RPM and J
+if xIndex == 3 % RPM
+    
+    xticks(0:11);
+    xticklabels([]);
+    xx = xticks;
+    xl = xlim;
+    newTickScale = xx(end)/xl(end) / (length(xx)-1);
+    for i = 1:length(xx)
+        text((i-1)*newTickScale,-0.03,num2str(xx(i)*xScale,'%.0f'),...
+            'Units','normalized','HorizontalAlignment','center')
+        text((i-1)*newTickScale,-0.08,num2str(Jconv/(xx(i)*xScale),'%.2f'),...
+            'Units','normalized','HorizontalAlignment','center')
+    end
+    text(-0.03,-0.03,'RPM','Units','normalized','HorizontalAlignment','right')
+    text(-0.03,-0.08,'J','Units','normalized','HorizontalAlignment','right')
+    
+else
+    
+    % Scale the X thick labels
+    tempLabel = xticklabels;
+    for i = 1:numel(tempLabel)
+        tempLabel{i} = str2double(tempLabel{i}) * xScale;
+        tempLabel{i} = num2str(tempLabel{i});
+    end
+    xticklabels(tempLabel)
+    
+end
+
+% Scale the Y thick labels
+tempLabel = yticklabels;
+    for i = 1:numel(tempLabel)
+        tempLabel{i} = str2double(tempLabel{i}) * yScale;
+        tempLabel{i} = num2str(tempLabel{i});
+    end
+    yticklabels(tempLabel)
+
 % Annotations on contour
 annot(voltData,xIndex,yIndex,xScale,yScale)
 
@@ -146,25 +183,10 @@ for i = 1:numel(condition)
     
     for j = 1:size(tempMat,1)
         text(tempMat(j,xIndex),tempMat(j,yIndex),...
-            ['J = ',num2str(condition{i}(j,1)), ' \rightarrow'], ...
+            ['T = ',num2str(condition{i}(j,1)), ' N \rightarrow'], ...
             'HorizontalAlignment','right')
     end
     
 end
-
-% Eventually scale the thick labels
-tempLabel = xticklabels;
-for i = 1:numel(tempLabel)
-    tempLabel{i} = str2double(tempLabel{i}) * xScale;
-    tempLabel{i} = num2str(tempLabel{i});
-end
-xticklabels(tempLabel)
-
-tempLabel = yticklabels;
-for i = 1:numel(tempLabel)
-    tempLabel{i} = str2double(tempLabel{i}) * yScale;
-    tempLabel{i} = num2str(tempLabel{i});
-end
-yticklabels(tempLabel)
 
 end

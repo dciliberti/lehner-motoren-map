@@ -1,63 +1,53 @@
 % Calculate the Lehner 2280-40 electric motor map from performance data
 % issued by the manufacturer. Plot propeller operating points on the map.
-% Version 6. Code compacted with functions, now it should be easier to add
-% other charts or features.
+% Version 7. Code includes and plot annotations on propeller thrust data.
 close all; clearvars; clc
 
 %% User-provided data
-conditionLabels = {'Desired values','XROTOR','CFD'};
+propDiam = 0.146;   % propeller diameter, m
+windSpeed = 35;     % wind tunnel speed, m/s
+Jconv = windSpeed/propDiam*60;    % J = V/nD = Jconv/RPM
 
-% Operative points: J, Shaft Power (W), RPM
-condition{1} = [1.46    403   9801
-                1.95    174   7351];
+conditionLabels = {'Desired values','XROTOR','CFD','Wind tunnel'};
 
-condition{2} = [1.57	849     9162
-                1.73	585     8329
-                1.88	411     7635
-                2.04	293     7047
-                2.20	211     6544
-                2.36	153     6108
-                2.51	112     5726
-                2.67	83      5389
-                2.83	67      5090];
+% Operative points: Thrust (N), Shaft Power (W), RPM
+condition{1} = [8.8     403     9801
+                4.0     174     7351];
 
-condition{3} = [1.4     1137	10274
-                1.6     679     8990
-                1.8     429     7991
-                2.0     284     7192
-                2.2     195     6538
-                2.4     141     5993];
+condition{2} = [14.8	998.5	11446
+                11.0	697.7	10174
+                8.3     496.5	9157
+                6.3     358.3	8324
+                4.7     261.0	7631
+                3.6     191.0	7044
+                2.6     139.3	6541
+                1.9     100.5	6105
+                1.3     70.9	5723
+                0.8     47.9	5386
+                0.4     29.8	5087];
 
-% conditionLabels = {'diretta 1:1', 'ridotta 1:2'};
-% condition{1} = [
-%     0.47	12939	11141
-%     0.63	5497	8356
-%     0.79	3034.3	6685
-%     0.94	1942.5	5570
-%     1.10	1374.1	4775
-%     1.26	1038.4	4178
-%     1.41	787.28	3714
-%     1.57	557.28	3342
-%     1.73	383.67	3038
-%     1.88	259.54	2785
-%     2.04	169.35	2571
-%     2.20	102.46	2387
-%     ];
-% 
-% condition{2} = [
-%     0.47	12939	22282
-%     0.63	5497	16711
-%     0.79	3034.3	13369
-%     0.94	1942.5	11141
-%     1.10	1374.1	9549
-%     1.26	1038.4	8356
-%     1.41	787.28	7427
-%     1.57	557.28	6685
-%     1.73	383.67	6077
-%     1.88	259.54	5570
-%     2.04	169.35	5142
-%     2.20	102.46	4775
-%     ];
+condition{3} = [9.42	613     10274
+                6.39	390     8990
+                4.36	256     7991
+                2.93	171     7192
+                1.90	114     6538
+                1.14	75      5993];
+            
+condition{4} = [0.06	6.0     5192
+                0.22	13.4	5379
+                0.46	21.9	5568
+                0.58	32.3	5740
+                0.85	43.3	5933
+                1.06	53.6	6123
+                1.28	64.4	6308
+                1.48	75.8	6486
+                1.85	94.6	6760
+                2.28	118.8	7082
+                2.74	145.9	7420
+                3.32	181.6	7815
+                4.06	225.2	8253
+                4.71	264.3	8621
+                5.56	318.4	9061];
 
 %% Lehner performance data
 v = 0;
@@ -125,18 +115,18 @@ end
 zsrc = griddata(r,c,s,xsrc,ysrc);
 
 plotData(condition,conditionLabels,V,...
-    xsrc,ysrc,zsrc,3,1,5,scale,1,1)
+    xsrc,ysrc,zsrc,3,1,5,scale,1,1,Jconv)
 
 %% Calculate EFFICIENCY from RPM and TORQUE
 [xert, yert] = meshgrid((0:100:11000)./scale, 0:1:70);  % x: RPM, y: Ncm
 zert = griddata(r,t,h,xert,yert);
 
 plotData(condition,conditionLabels,V,...
-    xert,yert,zert,3,4,6,scale,1,1)
+    xert,yert,zert,3,4,6,scale,1,1,Jconv)
 
 %% Calculate EFFICIENCY from RPM and CURRENT
 [xerc, yerc] = meshgrid((0:100:11000)./scale, 0:0.1:15);  % x: RPM, y: Ncm
 zerc = griddata(r,c,h,xerc,yerc);
 
 plotData(condition,conditionLabels,V,...
-    xerc,yerc,zerc,3,1,6,scale,1,1)
+    xerc,yerc,zerc,3,1,6,scale,1,1,Jconv)
