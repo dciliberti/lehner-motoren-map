@@ -8,6 +8,7 @@ propDiam = 0.2;     % propeller diameter, m
 windSpeed = 20;     % wind tunnel speed, m/s
 Jconv = windSpeed/propDiam*60;    % J = V/nD = Jconv/RPM
 
+% Plot labels
 % conditionLabels = {'Desired values','XROTOR','CFD','Wind tunnel'};
 
 %%Operative points: Thrust (N), Shaft Power (W), RPM
@@ -49,16 +50,32 @@ Jconv = windSpeed/propDiam*60;    % J = V/nD = Jconv/RPM
 %                 4.71	264.3	8621
 %                 5.56	318.4	9061];
 
-conditionLabels = {'DEP 20cm 8000','TIP 40cm 6000','TIP 40cm 4000','TIP 40cm 3000'};
+conditionLabels = {'DEP 20cm 8000','TIP 40cm 6000','TIP 40cm 4000','TIP 40cm 3000','TIP 40cm 2000'};
 
-condition{1} = [17.217	594.69	9549.3
-                9.0131	271.46	7639.4];
-            
+condition{1} = [14.00	467.88	8800];
 condition{2} = [20.456	554.29	6366.2];
-
 condition{3} = [14.716	376.12	3819.7];
-
 condition{4} = [21.1	563.41	3183.1];
+condition{5} = [16.33	454.48	2000];
+
+% Gearbox gear ratios, one per condition, used to gain torque at a lower
+% speed, i.e. the motor moves the gearbox input shaft at higher rpm with a
+% lower torque, while the propeller is linked to the output gearbox shaft,
+% rotating at lower rpm with a higher torque. The power is obviuously the
+% same, except for the mechanical losses of the gearbox.
+% In this code we look at the motor.
+
+gratio = [1, 1, 3, 3, 4]; % gear ratio
+gloss = [0, 0, 0.05, 0.05, 0.05]; % gearbox losses
+for i = 1:numel(condition)
+    condition{i}(:,3) = condition{i}(:,3) .* gratio(i);
+    condition{i}(:,2) = condition{i}(:,2) .* (1+gloss(i));
+end
+
+% Update plot labels with gear ratio e gearbox losses
+for i = 1:numel(condition)
+    conditionLabels{i} = [conditionLabels{i}, ' 1:',num2str(gratio(i))];
+end
 
 %% Lehner performance data
 v = 0;
@@ -122,7 +139,7 @@ for i = 1:numel(condition)
     % Display a warning if no solution is found for the i-th condition
     % (i.e. the required performance is out of the motor map)
     if any(all(isnan(tempMat(:,4:6)),1))
-       warning(['Cannot operate with: ',conditionLabels{i}])
+       warning(['Outside motor map with ',conditionLabels{i}])
     end
 end
 warning('on','backtrace')
