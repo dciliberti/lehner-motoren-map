@@ -110,6 +110,7 @@ limRPM = limRPM ./ scale;
 
 % Interpolate data to caclculate current drawn, motor torque and propeller
 % efficiency at assigned operating points
+warning('off','backtrace')
 for i = 1:numel(condition)
     % create a temporary variable to access cell data
     tempMat =  condition{i};
@@ -117,7 +118,14 @@ for i = 1:numel(condition)
     tempMat(:,5) = griddata(s,r,t,tempMat(:,2),tempMat(:,3)); % torque
     tempMat(:,6) = griddata(s,r,h,tempMat(:,2),tempMat(:,3)); % efficiency
     condition{i} = tempMat;
+    
+    % Display a warning if no solution is found for the i-th condition
+    % (i.e. the required performance is out of the motor map)
+    if any(all(isnan(tempMat(:,4:6)),1))
+       warning(['Cannot operate with: ',conditionLabels{i}])
+    end
 end
+warning('on','backtrace')
 
 % CONDITION = [J, SHAFT POWER, RPM, CURRENT, TORQUE, EFFICIENCY];
 
