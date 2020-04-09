@@ -1,6 +1,7 @@
 % Calculate the Lehner 2280-40 electric motor map from performance data
 % issued by the manufacturer. Plot propeller operating points on the map.
-% Version 7. Code includes and plots annotations on propeller thrust data.
+% Version 8. Code includes annotations on propeller thrust data and gear
+% ratio, accounting for mechanical losses (provided by the user).
 close all; clearvars; clc
 
 %% User-provided data
