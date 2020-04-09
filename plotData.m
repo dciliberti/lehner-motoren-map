@@ -67,8 +67,16 @@ for i = 1:numel(condition)
     % CONDITION = [J, SHAFT POWER, RPM, CURRENT, TORQUE, EFFICIENCY];
     tempMat = tempMat(:,[4,5,3,5,2,6]);
     tempMat(:,2) = NaN; % electric power not defined for propeller data
-    conditionCurves{i} = plot3(tempMat(:,xIndex),tempMat(:,yIndex),tempMat(:,zIndex)*1.01,...
+    % show only makers if there is only 1 data point per condition
+    if size(tempMat,1) == 1
+        conditionCurves{i} = ...
+            scatter3(tempMat(:,xIndex),tempMat(:,yIndex),tempMat(:,zIndex)*1.01,...
+            'filled','MarkerEdgeColor','black');
+    else
+        conditionCurves{i} = ...
+            plot3(tempMat(:,xIndex),tempMat(:,yIndex),tempMat(:,zIndex)*1.01,...
         '-o','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
+    end
 end
 
 hold off, grid on, view(-20,30)
@@ -127,8 +135,16 @@ for i = 1:numel(condition)
     % CONDITION = [J, SHAFT POWER, RPM, CURRENT, TORQUE, EFFICIENCY];
     tempMat = tempMat(:,[4,5,3,5,2,6]);
     tempMat(:,2) = NaN; % electric power not defined for propeller data
-    conditionCurves{i} = plot(tempMat(:,xIndex),tempMat(:,yIndex),...
-        'o-','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
+        % show only makers if there is only 1 data point per condition
+    if size(tempMat,1) == 1
+        conditionCurves{i} = ...
+            scatter(tempMat(:,xIndex),tempMat(:,yIndex),...
+            'filled','MarkerEdgeColor','black');
+    else
+        conditionCurves{i} = ...
+            plot(tempMat(:,xIndex),tempMat(:,yIndex),...
+        '-o','LineWidth',3.0,'MarkerSize',3,'MarkerEdgeColor','black');
+    end
 end
 
 hold off
