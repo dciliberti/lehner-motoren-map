@@ -5,17 +5,25 @@
 close all; clearvars; clc
 
 %% User-provided data
-propDiam = 0.2;     % propeller diameter, m
+propDiam = 0.3;     % propeller diameter, m
 windSpeed = 20;     % wind tunnel speed, m/s
 Jconv = windSpeed/propDiam*60;    % J = V/nD = Jconv/RPM
 
 % Plot labels
-% conditionLabels = {'Desired values','XROTOR','CFD','Wind tunnel'};
+conditionLabels = {'5-blades wood'};
 
-%%Operative points: Thrust (N), Shaft Power (W), RPM
+% Operative points: Thrust (N), Shaft Power (W), RPM
+condition{1} = [79.15	3561.2	13333
+    38.59	1435.7	10000
+    20.47	678.1	8000
+    11.00	344.0	6667
+    5.49	176.4	5714
+    2.01	83.3	5000
+    -0.25	28.5	4444];
+
 % condition{1} = [8.8     403     9801
 %                 4.0     174     7351];
-% 
+%
 % condition{2} = [14.8	998.5	11446
 %                 11.0	697.7	10174
 %                 8.3     496.5	9157
@@ -27,14 +35,14 @@ Jconv = windSpeed/propDiam*60;    % J = V/nD = Jconv/RPM
 %                 1.3     70.9	5723
 %                 0.8     47.9	5386
 %                 0.4     29.8	5087];
-% 
+%
 % condition{3} = [9.42	613     10274
 %                 6.39	390     8990
 %                 4.36	256     7991
 %                 2.93	171     7192
 %                 1.90	114     6538
 %                 1.14	75      5993];
-%             
+%
 % condition{4} = [0.06	6.0     5192
 %                 0.22	13.4	5379
 %                 0.46	21.9	5568
@@ -51,13 +59,13 @@ Jconv = windSpeed/propDiam*60;    % J = V/nD = Jconv/RPM
 %                 4.71	264.3	8621
 %                 5.56	318.4	9061];
 
-conditionLabels = {'DEP 20cm 8000','TIP 40cm 6000','TIP 40cm 4000','TIP 40cm 3000','TIP 40cm 2000'};
-
-condition{1} = [14.00	467.88	8800];
-condition{2} = [20.456	554.29	6366.2];
-condition{3} = [14.716	376.12	3819.7];
-condition{4} = [21.1	563.41	3183.1];
-condition{5} = [16.33	454.48	2000];
+% conditionLabels = {'DEP 20cm 8000','TIP 40cm 6000','TIP 40cm 4000','TIP 40cm 3000','TIP 40cm 2000'};
+%
+% condition{1} = [14.00	467.88	8800];
+% condition{2} = [20.456	554.29	6366.2];
+% condition{3} = [14.716	376.12	3819.7];
+% condition{4} = [21.1	563.41	3183.1];
+% condition{5} = [16.33	454.48	2000];
 
 % Gearbox gear ratios, one per condition, used to gain torque at a lower
 % speed, i.e. the motor moves the gearbox input shaft at higher rpm with a
@@ -65,9 +73,8 @@ condition{5} = [16.33	454.48	2000];
 % rotating at lower rpm with a higher torque. The power is obviuously the
 % same, except for the mechanical losses of the gearbox.
 % In this code we look at the motor.
-
-gratio = [1, 1, 3, 3, 4]; % gear ratio
-gloss = [0, 0, 0.05, 0.05, 0.05]; % gearbox losses
+gratio = [1]; % gear ratio
+gloss = [0]; % gearbox losses
 for i = 1:numel(condition)
     condition{i}(:,3) = condition{i}(:,3) .* gratio(i);
     condition{i}(:,2) = condition{i}(:,2) .* (1+gloss(i));
@@ -140,7 +147,7 @@ for i = 1:numel(condition)
     % Display a warning if no solution is found for the i-th condition
     % (i.e. the required performance is out of the motor map)
     if any(all(isnan(tempMat(:,4:6)),1))
-       warning(['Outside motor map with ',conditionLabels{i}])
+        warning(['Outside motor map with ',conditionLabels{i}])
     end
 end
 warning('on','backtrace')
