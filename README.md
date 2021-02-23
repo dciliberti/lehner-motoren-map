@@ -1,7 +1,7 @@
 # Lehner motor map
-Calculate the Lehner&copy; 2280-40 electric motor map from performance data issued by the manufacturer. Plot motor performance maps in terms of torque, shaft power, efficiency, and absorbed current as function of RPM and input voltage. Plot propeller operating points on the map. Include gear ratio and gearbox losses.
+Calculate the Lehner&copy; 2280-40 electric motor map from performance data released by the manufacturer. Plot motor performance maps in terms of torque, shaft power, efficiency, and absorbed current as function of RPM and input voltage. Plot propeller operating points on the map. Include gear ratio and gearbox losses.
 
-If you are is satisfied with the default motor data, then skip to the [Usage](#usage) section
+If you are is satisfied with the default motor data, then skip to the [Usage](#usage) section.
  
 ## Code structure
 The code is entirely written in MATLAB&reg;. The structure is as follows:
@@ -69,5 +69,12 @@ For instance, in case of three propellers we must have three numbers for each ar
 To eliminate the gearbox just assign 1 to `gratio` and 0 to `gloss`, but always match the number of elements with the number of conditions.
 
 ### Output
-Actually the outputs are six charts: three 3D plots and three contours. Please, keep in mind that the J axis in the contour plot is referred to the values assigned to `propdiam` and `windSpeed`, therefore if your propeller data do not match these reference values, the conversion between RPM and J will be wrong and only the RPM axis should be looked.
+Actually the outputs are six charts: three 3D plots and three contours. Please, keep in mind that the J axis in the contour plot is referred to the values assigned to `propdiam` and `windSpeed`, therefore if your propeller data do not match these reference values, the conversion between RPM and J will be wrong and only the RPM values should be looked.
 
+![Motor Map Surface Plot](https://github.com/dciliberti/lehner-motoren-map/blob/master/example/Motor%20Map%20Surface%20Plot.png?raw=true)
+
+![Shaft Power Surface Plot](https://github.com/dciliberti/lehner-motoren-map/blob/master/example/Shaft%20Power%20Surface%20Plot.png?raw=true)
+
+![Motor Map Contour Plot](https://github.com/dciliberti/lehner-motoren-map/blob/master/example/Motor%20Map%20Contour%20Plot.png?raw=true)
+
+![Shaft Power Contour Plot](https://github.com/dciliberti/lehner-motoren-map/blob/master/example/Shaft%20Power%20Contour%20Plot.png?raw=true)
