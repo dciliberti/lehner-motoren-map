@@ -8,64 +8,31 @@ close all; clearvars; clc
 propDiam = 0.3;     % propeller diameter, m
 windSpeed = 20;     % wind tunnel speed, m/s
 Jconv = windSpeed/propDiam*60;    % J = V/nD = Jconv/RPM
-
-% Plot labels
-conditionLabels = {'5-blades wood'};
+% Jconv is used as reference value to plot both RPM and J axes. Therefore,
+% if the propeller data refer to other values of wind speed or diameter,
+% the match between J and RPM will be not correct and only RPM should be
+% taken in consideration.
 
 % Operative points: Thrust (N), Shaft Power (W), RPM
-condition{1} = [79.15	3561.2	13333
-    38.59	1435.7	10000
-    20.47	678.1	8000
-    11.00	344.0	6667
-    5.49	176.4	5714
-    2.01	83.3	5000
-    -0.25	28.5	4444];
+conditionLabels = {'DEP prop 30cm','TIP prop 40cm'};
 
-% condition{1} = [8.8     403     9801
-%                 4.0     174     7351];
-%
-% condition{2} = [14.8	998.5	11446
-%                 11.0	697.7	10174
-%                 8.3     496.5	9157
-%                 6.3     358.3	8324
-%                 4.7     261.0	7631
-%                 3.6     191.0	7044
-%                 2.6     139.3	6541
-%                 1.9     100.5	6105
-%                 1.3     70.9	5723
-%                 0.8     47.9	5386
-%                 0.4     29.8	5087];
-%
-% condition{3} = [9.42	613     10274
-%                 6.39	390     8990
-%                 4.36	256     7991
-%                 2.93	171     7192
-%                 1.90	114     6538
-%                 1.14	75      5993];
-%
-% condition{4} = [0.06	6.0     5192
-%                 0.22	13.4	5379
-%                 0.46	21.9	5568
-%                 0.58	32.3	5740
-%                 0.85	43.3	5933
-%                 1.06	53.6	6123
-%                 1.28	64.4	6308
-%                 1.48	75.8	6486
-%                 1.85	94.6	6760
-%                 2.28	118.8	7082
-%                 2.74	145.9	7420
-%                 3.32	181.6	7815
-%                 4.06	225.2	8253
-%                 4.71	264.3	8621
-%                 5.56	318.4	9061];
+condition{1} = [74.15	3179.4	13333
+    37.32	1317.6	10000
+    20.72	645.7	8000
+    11.94	345.3	6667
+    6.82	191.2	5714
+    3.61	104.4	5000
+    1.50	52.1	4444];
 
-% conditionLabels = {'DEP 20cm 8000','TIP 40cm 6000','TIP 40cm 4000','TIP 40cm 3000','TIP 40cm 2000'};
-%
-% condition{1} = [14.00	467.88	8800];
-% condition{2} = [20.456	554.29	6366.2];
-% condition{3} = [14.716	376.12	3819.7];
-% condition{4} = [21.1	563.41	3183.1];
-% condition{5} = [16.33	454.48	2000];
+condition{2} = [140.73	9677.2	6667
+    73.68	4106.3	5000
+    43.37	2098.7	4000
+    27.30	1198.4	3333
+    17.82	732.3	2857
+    11.77	465.2	2500
+    7.69	300.6	2222
+    4.83	193.6	2000
+    2.76	121.3	1818];
 
 % Gearbox gear ratios, one per condition, used to gain torque at a lower
 % speed, i.e. the motor moves the gearbox input shaft at higher rpm with a
@@ -73,8 +40,9 @@ condition{1} = [79.15	3561.2	13333
 % rotating at lower rpm with a higher torque. The power is obviuously the
 % same, except for the mechanical losses of the gearbox.
 % In this code we look at the motor.
-gratio = [1]; % gear ratio
-gloss = [0]; % gearbox losses
+
+gratio = [1, 4]; % gear ratio
+gloss = [0.05, 0.05]; % gearbox losses
 for i = 1:numel(condition)
     condition{i}(:,3) = condition{i}(:,3) .* gratio(i);
     condition{i}(:,2) = condition{i}(:,2) .* (1+gloss(i));
