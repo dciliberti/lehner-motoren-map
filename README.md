@@ -4,7 +4,7 @@ Calculate the Lehner&copy; 2280-40 electric motor map from performance data issu
 If you are is satisfied with the default motor data, then skip to the [Usage](#usage) section
  
 ## Code structure
-The code is entirely written in MATLAB. The structure is as follows:
+The code is entirely written in MATLAB&reg;. The structure is as follows:
 
 | Name | Type |
 | :--- | :--- |
@@ -34,6 +34,7 @@ The software has one main script `performanceCharts.m` and several functions to 
 Therefore, any electric motor data can be imported and plotted, although this software is focused on the 2280-40 for my research activities.
 
 ## Usage
+The program will interpolate data to plot the motor performance maps and the achievable propeller operating points. For the first time, just hit RUN on the MATLAB&reg; toolbar to get a demo.
 
 ### Input
 At the beginning of the main script `performanceCharts.m` the following variables are assigned:
@@ -41,9 +42,9 @@ At the beginning of the main script `performanceCharts.m` the following variable
 - `windSpeed`: the advance speed of the propeller in m/s, assigned by the user
 - `Jconv`: a conversion factor from RPM to advance ratio J, pre-defined
 
-Then the user should write the propeller operating point of interest. If none, the program should only show the motor performance maps without propeller data points. The utility of this software is to plot the propeller operating points acheivable with the motor. A gearbox may be included.
+Then the user should write the propeller operating points of interest. If none, the program should only show the motor performance map charts without propeller data points.
 
-After defining the propeller diameter and the wind speed in the first lines of the main script `performanceCharts.m`, the user should write the propeller operating condition as a matrix. Each column correspond to a given quantity, i.e. Thrust, Shaft Power, RPM. Each row is a different combination of these quantities. For instance:
+Each propeller is defined as a matrix. Each column correspond to a given quantity, i.e. Thrust, Shaft Power, RPM. Each row is a different combination of these quantities defining a data point. For instance:
 
 | Thrust (N) | Shaft Power (W) | (RPM) |
 | --- | --- | --- |
@@ -65,7 +66,8 @@ For instance, in case of three propellers we must have three numbers for each ar
 `gratio = [1, 4, 3]`
 `gloss = [0.0, 0.10, 0.05]`
 
-To eliminate the gearbox just assign 1 to `gratio` and 0 to `gloss`, but always matching the number of elements with the number of conditions.
+To eliminate the gearbox just assign 1 to `gratio` and 0 to `gloss`, but always match the number of elements with the number of conditions.
 
 ### Output
 Actually the outputs are six charts: three 3D plots and three contours. Please, keep in mind that the J axis in the contour plot is referred to the values assigned to `propdiam` and `windSpeed`, therefore if your propeller data do not match these reference values, the conversion between RPM and J will be wrong and only the RPM axis should be looked.
+
