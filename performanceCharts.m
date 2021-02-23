@@ -42,7 +42,7 @@ condition{2} = [140.73	9677.2	6667
 % In this code we look at the motor.
 
 gratio = [1, 4]; % gear ratio
-gloss = [0.05, 0.05]; % gearbox losses
+gloss = [0, 0.05]; % gearbox losses
 for i = 1:numel(condition)
     condition{i}(:,3) = condition{i}(:,3) .* gratio(i);
     condition{i}(:,2) = condition{i}(:,2) .* (1+gloss(i));
