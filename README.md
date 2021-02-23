@@ -1,6 +1,8 @@
 # Lehner motor map
-Calculate the Lehner&copy; 2280-40 electric motor map from performance data issued by the manufacturer. Plot propeller operating points on the map.
+Calculate the Lehner&copy; 2280-40 electric motor map from performance data issued by the manufacturer. Plot motor performance maps in terms of torque, shaft power, efficiency, and absorbed current as function of RPM and input voltage. Plot propeller operating points on the map. Include gear ratio and gearbox losses.
 
+If you are is satisfied with the default motor data, then skip to the [Usage](#usage) section
+ 
 ## Code structure
 The code is entirely written in MATLAB. The structure is as follows:
 
@@ -18,7 +20,7 @@ The code is entirely written in MATLAB. The structure is as follows:
 | performanceCharts.m | MATLAB main script |
 
 
-The software has one main script `performanceCharts.m` and several functions to run. Motor data is imported from .csv files located in the `data` folder. Each file contains data manually imported from the webpage [http://www.lehner-motoren.com/calc/diagramm_en.php](http://www.lehner-motoren.com/calc/diagramm_en.php). Therefore, each .csv file is for a fixed input voltage. Columns contain the follwing data:
+The software has one main script `performanceCharts.m` and several functions to run. Motor data is imported from .csv files located in the `data` folder. Each file contains data manually imported from the webpage <http://www.lehner-motoren.com/calc/diagramm_en.php>. Therefore, each .csv file is for a fixed input voltage. Columns contain the follwing data:
 
 | Current (A) | Input power (W) | RPM (/min) | Torque (Ncm) | Output power (W) | Efficiency (%) |
 | ---   | ---   | ---   | ---  | ---    | ---  |  
@@ -29,16 +31,18 @@ The software has one main script `performanceCharts.m` and several functions to 
 | 11.4	| 684.0	| 10675	| 56.5 | 632.0	| 92.4 |
 | ...   | ...   | ...   | ...  | ...    | ...  |  
 
-Therefore, any electric motor data can be imported and plotted, although this software is focused on the 2280-40 for my personal interest.
+Therefore, any electric motor data can be imported and plotted, although this software is focused on the 2280-40 for my research activities.
 
+## Usage
+
+### Input
 At the beginning of the main script `performanceCharts.m` the following variables are assigned:
 - `propDiam`: the propeller diameter in meters, assigned by the user
 - `windSpeed`: the advance speed of the propeller in m/s, assigned by the user
 - `Jconv`: a conversion factor from RPM to advance ratio J, pre-defined
 
-Then the user should write the propeller operating point of interest. If void, the program should only show the motor performance maps in terms of torque, shaft power, efficiency, and absorbed current as function of RPM and input voltage. The utility of this software is to plot the propeller operating points acheivable with the motor. The possibility to account for gearbox is included.
+Then the user should write the propeller operating point of interest. If none, the program should only show the motor performance maps without propeller data points. The utility of this software is to plot the propeller operating points acheivable with the motor. A gearbox may be included.
 
-## Usage
 After defining the propeller diameter and the wind speed in the first lines of the main script `performanceCharts.m`, the user should write the propeller operating condition as a matrix. Each column correspond to a given quantity, i.e. Thrust, Shaft Power, RPM. Each row is a different combination of these quantities. For instance:
 
 | Thrust (N) | Shaft Power (W) | (RPM) |
@@ -63,5 +67,5 @@ For instance, in case of three propellers we must have three numbers for each ar
 
 To eliminate the gearbox just assign 1 to `gratio` and 0 to `gloss`, but always matching the number of elements with the number of conditions.
 
-## Output
+### Output
 Actually the outputs are six charts: three 3D plots and three contours. Please, keep in mind that the J axis in the contour plot is referred to the values assigned to `propdiam` and `windSpeed`, therefore if your propeller data do not match these reference values, the conversion between RPM and J will be wrong and only the RPM axis should be looked.
